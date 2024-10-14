@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useRef, useState } from "react";
 
 function App() {
+  const githubAppRef = useRef();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const element = githubAppRef.current;
+
+    const handleDataSent = (event) => {
+      console.log("Received:", event.detail);
+    };
+
+    /* notice here how "dataSent" is the Output
+      event emitter on the Angular side */
+    if (element) {
+      element.addEventListener("dataSent", handleDataSent);
+    }
+
+    return () => {
+      if (element) {
+        element.removeEventListener("dataSent", handleDataSent);
+      }
+    };
+  }, []);
+
+  const handleSendMessage = () => {
+    setMessage("Hello from React!");
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>React App with Angular Custom Element</h1>
+      <button onClick={handleSendMessage}>Send Message to Angular</button>
+      <github-app
+        ref={githubAppRef}
+        title="Custom GitHub Authentication"
+        message-from-react={message}
+      ></github-app>
     </div>
   );
 }
-
 export default App;
